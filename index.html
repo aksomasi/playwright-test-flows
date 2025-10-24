@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Playwright Practice – Test Plan Checklist</title>
+  <style>
+    :root{--bg:#0f172a;--panel:#0b1220;--text:#e5e7eb;--muted:#9aa3b2;--accent:#7c3aed;--accent2:#22d3ee;--border:#1f2937;--ok:#22c55e;--warn:#f59e0b;--err:#ef4444}
+    html,body{margin:0;height:100%;background:linear-gradient(135deg,#0f172a,#0b1220);color:var(--text);font:14px/1.45 system-ui,Segoe UI,Inter,Roboto,Arial}
+    .container{max-width:1100px;margin:24px auto;padding:0 16px}
+    header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border:1px solid var(--border);border-radius:14px;background:radial-gradient(1000px 120px at 10% -20%,rgba(124,58,237,.25),transparent),radial-gradient(1000px 120px at 90% -20%,rgba(34,211,238,.18),transparent)}
+    .badge{background:#111827;border:1px solid #2a3446;padding:6px 10px;border-radius:999px;color:#cbd5e1}
+    .grid{display:grid;grid-template-columns:260px 1fr;gap:16px;margin-top:16px}
+    nav{border:1px solid var(--border);border-radius:14px;background:var(--panel);padding:10px}
+    nav h4{margin:10px;color:var(--muted);text-transform:uppercase;font-size:12px;letter-spacing:.08em}
+    nav a{display:block;text-decoration:none;color:#d1d5db;padding:10px 12px;border-radius:10px;margin:6px 8px;border:1px solid transparent}
+    nav a:hover{background:#101827;border-color:#243244}
+    nav a.active{background:linear-gradient(90deg,rgba(124,58,237,.25),rgba(34,211,238,.18));border-color:#2c3750}
+    main{border:1px solid var(--border);border-radius:14px;background:rgba(17,24,39,.7);padding:18px}
+    details{border:1px solid #223047;background:#0b1220;border-radius:12px;margin:10px 0}
+    details>summary{list-style:none;padding:12px 14px;cursor:pointer}
+    details[open]>summary{background:linear-gradient(90deg,rgba(124,58,237,.22),rgba(34,211,238,.12))}
+    .card{padding:14px 16px;border-top:1px solid #1f2a3b}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .btn{border:1px solid #2a3448;background:#101827;color:#e5e7eb;padding:9px 12px;border-radius:10px;cursor:pointer}
+    .btn.primary{background:linear-gradient(90deg,#7c3aed,#22d3ee);color:#0b1220;border:none}
+    .btn.ok{background:var(--ok);border:none}
+    .btn.warn{background:var(--warn);border:none;color:#111}
+    .btn.err{background:var(--err);border:none}
+    .muted{color:var(--muted)}
+    .kvs{display:grid;grid-template-columns:180px 1fr;gap:8px;margin:8px 0}
+    textarea,input[type="text"],select{width:100%;background:#0b1220;border:1px solid #263247;color:#e5e7eb;border-radius:10px;padding:9px 10px}
+    .checklist{display:grid;grid-template-columns:24px 1fr;gap:10px;margin:8px 0}
+    .footer{display:flex;justify-content:space-between;align-items:center;margin-top:14px}
+    .pill{padding:4px 8px;border:1px solid #2b3650;border-radius:999px;color:#cbd5e1}
+    .right{display:flex;gap:8px;align-items:center}
+    pre{background:#0b1220;border:1px solid #1f2937;border-radius:12px;padding:10px;overflow:auto}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h2 style="margin:0">Playwright Test Plan – Checklist</h2>
+      <span class="badge">v1.0 • data-testids included</span>
+    </header>
+
+    <div class="grid">
+      <nav>
+        <h4>Suites</h4>
+        <a href="#suite-wizard" class="active" data-testid="nav-wizard">🧭 Wizard Form</a>
+        <a href="#suite-actions" data-testid="nav-actions">🖱️ Button Actions</a>
+        <a href="#suite-table" data-testid="nav-table">📋 Dynamic Table</a>
+        <a href="#suite-dnd" data-testid="nav-dnd">🧲 Drag & Drop</a>
+        <a href="#suite-modal" data-testid="nav-modal">🪟 Modal & Toast</a>
+        <a href="#suite-shadow" data-testid="nav-shadow">🌗 Shadow DOM</a>
+      </nav>
+
+      <main>
+        <div class="row" style="justify-content:space-between">
+          <div class="pill">Target app: <code data-testid="target-url">http://localhost:8080/</code></div>
+          <div class="right">
+            <button class="btn" id="btnMarkAll" data-testid="btn-mark-all">Mark all open cases PASS</button>
+            <button class="btn primary" id="btnExport" data-testid="btn-export">Export results JSON</button>
+          </div>
+        </div>
+
+        <!-- SUITE: WIZARD FORM -->
+        <section id="suite-wizard">
+          <h3>🧭 Suite: Wizard Form</h3>
+
+          <details open data-testid="tc-1">
+            <summary><strong>TC-1</strong> – Navigate to Wizard Form <span class="muted">(load & nav)</span></summary>
+            <div class="card">
+              <div class="kvs">
+                <div>Objective</div><div>Ensure navigation links and page load work correctly.</div>
+                <div>Prereq URL</div><div><input type="text" value="index.html#wizard" data-testid="tc1-url"></div>
+                <div>Status</div>
+                <div>
+                  <select data-testid="tc1-status"><option>Not Run</option><option>Pass</option><option>Fail</option><option>Blocked</option></select>
+                </div>
+              </div>
+              <div class="checklist">
+                <input type="checkbox" data-testid="tc1-s1"><label>Launch the app</label>
+                <input type="checkbox" data-testid="tc1-s2"><label>Verify title is “Playwright Practice Playground”</label>
+                <input type="checkbox" data-testid="tc1-s3"><label>Click sidebar "🧭 Wizard Form"</label>
+                <input type="checkbox" data-testid="tc1-s4"><label>Validate chip shows "1. Registration"</label>
+                <input type="checkbox" data-testid="tc1-s5"><label>Ensure Next and Reset buttons are visible</label>
+              </div>
+              <div class="kvs">
+                <div>Expected</div><div>Wizard step 1 active; Next & Reset visible</div>
+                <div>Notes</div><div><textarea rows="2" data-testid="tc1-notes"></textarea></div>
+              </div>
+            </div>
+          </details>
+
+          <details data-testid="tc-2">
+            <summary><strong>TC-2</strong> – Fill Registration Form <span class="muted">(inputs & validation)</span></summary>
+            <div class="card">
+              <div class="kvs">
+                <div>Objective</div><div>Verify text fields, dropdowns, radios, checkboxes, color picker.</div>
+                <div>Status</div>
+                <div><select data-testid="tc2-status"><option>Not Run</option><option>Pass</option><option>Fail</option><option>Blocked</option></select></div>
+              </div>
+              <div class="checklist">
+                <input type="checkbox" data-testid="tc2-s1"><label>Type First Name = Anil</label>
+                <input type="checkbox" data-testid="tc2-s2"><label>Type Last Name = Somasi</label>
+                <input type="checkbox" data-testid="tc2-s3"><label>Type Email = anil@example.com</label>
+                <input type="checkbox" data-testid="tc2-s4"><label>Type Bio text</label>
+                <input type="checkbox" data-testid="tc2-s5"><label>Select DOB = 1997-05-23</label>
+                <input type="checkbox" data-testid="tc2-s6"><label>Select Time = 09:30</label>
+                <input type="checkbox" data-testid="tc2-s7"><label>Select Country = India</label>
+                <input type="checkbox" data-testid="tc2-s8"><label>Multi-select Skills = HTML, Playwright, CSS</label>
+                <input type="checkbox" data-testid="tc2-s9"><label>Select Gender = Male</label>
+                <input type="checkbox" data-testid="tc2-s10"><label>Check Terms & Marketing</label>
+                <input type="checkbox" data-testid="tc2-s11"><label>Pick Favorite color</label>
+                <input type="checkbox" data-testid="tc2-s12"><label>Set Age = 28</label>
+                <input type="checkbox" data-testid="tc2-s13"><label>Set Satisfaction = 8</label>
+                <input type="checkbox" data-testid="tc2-s14"><label>Upload Avatar</label>
+                <input type="checkbox" data-testid="tc2-s15"><label>Click Next</label>
+              </div>
+              <div class="kvs">
+                <div>Expected</div><div>Move to Step 2 – Preferences without validation errors</div>
+                <div>Notes</div><div><textarea rows="2" data-testid="tc2-notes"></textarea></div>
+              </div>
+            </div>
+          </details>
+
+          <details data-testid="tc-3">
+            <summary><strong>TC-3</strong> – Preferences Page <span class="muted">(toggles, datalist, drop)</span></summary>
+            <div class="card">
+              <div class="kvs">
+                <div>Objective</div><div>Validate toggles, dropdowns, datalist, drop zone.</div>
+                <div>Status</div>
+                <div><select data-testid="tc3-status"><option>Not Run</option><option>Pass</option><option>Fail</option><option>Blocked</option></select></div>
+              </div>
+              <div class="checklist">
+                <input type="checkbox" data-testid="tc3-s1"><label>Confirm step chip = Preferences</label>
+                <input type="checkbox" data-testid="tc3-s2"><label>Select Theme = Dark</label>
+                <input type="checkbox" data-testid="tc3-s3"><label>Select Newsletter = Weekly</label>
+                <input type="checkbox" data-testid="tc3-s4"><label>Toggle Experimental ON</label>
+                <input type="checkbox" data-testid="tc3-s5"><label>Search type 'Sel' → choose 'Selectors'</label>
+                <input type="checkbox" data-testid="tc3-s6"><label>Drop a file on the zone</label>
+                <input type="checkbox" data-testid="tc3-s7"><label>Click Preview</label>
+                <input type="checkbox" data-testid="tc3-s8"><label>Click Next</label>
+              </div>
+              <div class="kvs">
+                <div>Expected</div><div>Step 3 opens; JSON preview shows data</div>
+                <div>Notes</div><div><textarea rows="2" data-testid="tc3-notes"></textarea></div>
+              </div>
+            </div>
+          </details>
+
+          <details data-testid="tc-4">
+            <summary><strong>TC-4</strong> – Review & Submit <span class="muted">(toast & reset)</span></summary>
+            <div class="card">
+              <div class="kvs">
+                <div>Objective</div><div>Ensure data persists and submission triggers toast + reset.</div>
+                <div>Status</div>
+                <div><select data-testid="tc4-status"><option>Not Run</option><option>Pass</option><option>Fail</option><option>Blocked</option></select></div>
+              </div>
+              <div class="checklist">
+                <input type="checkbox" data-testid="tc4-s1"><label>Verify JSON contains entered values</label>
+                <input type="checkbox" data-testid="tc4-s2"><label>Click Submit</label>
+                <input type="checkbox" data-testid="tc4-s3"><label>Toast appears "Submitted successfully"</label>
+                <input type="checkbox" data-testid="tc4-s4"><label>Form resets to Step 1</label>
+              </div>
+              <div class="kvs">
+                <div>Expected</div><div>Toast then reset to Registration</div>
+                <div>Notes</div><div><textarea rows="2" data-testid="tc4-notes"></textarea></div>
+              </div>
+            </div>
+          </details>
+        </section>
+
+        <!-- SUITE: BUTTON ACTIONS -->
+        <section id="suite-actions">
+          <h3>🖱️ Suite: Button Actions & States</h3>
+          <details open data-testid="tc-5">
+            <summary><strong>TC-5</strong> – Button Interactions</summary>
+            <div class="card">
+              <div class="kvs">
+                <div>Objective</div><div>Click, double-click, right-click, delayed enable, modal & toast.</div>
+                <div>Status</div>
+                <div><select data-testid="tc5-status"><option>Not Run</option><option>Pass</option><option>Fail</option><option>Blocked</option></select></div>
+              </div>
+              <div class="checklist">
+                <input type="checkbox" data-testid="tc5-s1"><label>Click Regular → log shows "click"</label>
+                <input type="checkbox" data-testid="tc5-s2"><label>Double-click → "double-click"</label>
+                <input type="checkbox" data-testid="tc5-s3"><label>Right-click → "context-menu"</label>
+                <input type="checkbox" data-testid="tc5-s4"><label>Wait 3s → delayed button enabled; click</label>
+                <input type="checkbox" data-testid="tc5-s5"><label>Open Modal → OK → toast shows "ok"</label>
+                <input type="checkbox" data-testid="tc5-s6"><label>Show Toast button → toast visible</label>
+              </div>
+              <div class="kvs">
+                <div>Expected</div><div>Logs appear; dialog & toast behave as expected</div>
+                <div>Notes</div><div><textarea rows="2" data-testid="tc5-notes"></textarea></div>
+              </div>
+            </div>
+          </details>
+        </section>
+
+        <!-- SUITE: DYNAMIC TABLE -->
+        <section id="suite-table">
+          <h3>📋 Suite: Dynamic Table</h3>
+          <details open data-testid="tc-6">
+            <summary><strong>TC-6</strong> – Add and Delete Rows</summary>
+            <div class="card">
+              <div class="kvs">
+                <div>Objective</div><div>Verify row add, edit, delete, and clear.</div>
+                <div>Status</div>
+                <div><select data-testid="tc6-status"><option>Not Run</option><option>Pass</option><option>Fail</option><option>Blocked</option></select></div>
+              </div>
+              <div class="checklist">
+                <input type="checkbox" data-testid="tc6-s1"><label>Click Add Row → new row visible</label>
+                <input type="checkbox" data-testid="tc6-s2"><label>Set Name = Test User</label>
+                <input type="checkbox" data-testid="tc6-s3"><label>Role = Editor</label>
+                <input type="checkbox" data-testid="tc6-s4"><label>Active = checked</label>
+                <input type="checkbox" data-testid="tc6-s5"><label>Add second row</label>
+                <input type="checkbox" data-testid="tc6-s6"><label>Delete first row</label>
+                <input type="checkbox" data-testid="tc6-s7"><label>Clear → tbody empty</label>
+              </div>
+              <div class="kvs">
+                <div>Expected</div><div>Rows update in DOM accordingly</div>
+                <div>Notes</div><div><textarea rows="2" data-testid="tc6-notes"></textarea></div>
+              </div>
+            </div>
+          </details>
+        </section>
+
+        <!-- SUITE: DND -->
+        <section id="suite-dnd">
+          <h3>🧲 Suite: Drag & Drop</h3>
+          <details open data-testid="tc-7">
+            <summary><strong>TC-7</strong> – Drag Element</summary>
+            <div class="card">
+              <div class="kvs">
+                <div>Objective</div><div>Drag from source to target.</div>
+                <div>Status</div>
+                <div><select data-testid="tc7-status"><option>Not Run</option><option>Pass</option><option>Fail</option><option>Blocked</option></select></div>
+              </div>
+              <div class="checklist">
+                <input type="checkbox" data-testid="tc7-s1"><label>Drag source → target</label>
+                <input type="checkbox" data-testid="tc7-s2"><label>Verify drop text = "Dropped: payload-123"</label>
+              </div>
+              <div class="kvs">
+                <div>Expected</div><div>Target shows dropped payload text</div>
+                <div>Notes</div><div><textarea rows="2" data-testid="tc7-notes"></textarea></div>
+              </div>
+            </div>
+          </details>
+        </section>
+
+        <!-- SUITE: MODAL & TOAST -->
+        <section id="suite-modal">
+          <h3>🪟 Suite: Modal & Toast</h3>
+          <details open data-testid="tc-8">
+            <summary><strong>TC-8</strong> – Modal Interaction</summary>
+            <div class="card">
+              <div class="kvs">
+                <div>Objective</div><div>Open dialog; verify toast on close.</div>
+                <div>Status</div>
+                <div><select data-testid="tc8-status"><option>Not Run</option><option>Pass</option><option>Fail</option><option>Blocked</option></select></div>
+              </div>
+              <div class="checklist">
+                <input type="checkbox" data-testid="tc8-s1"><label>Open dialog</label>
+                <input type="checkbox" data-testid="tc8-s2"><label>Click Cancel</label>
+                <input type="checkbox" data-testid="tc8-s3"><label>Toast message shows "Dialog result: cancel"</label>
+              </div>
+              <div class="kvs">
+                <div>Expected</div><div>Toast appears after dialog closes</div>
+                <div>Notes</div><div><textarea rows="2" data-testid="tc8-notes"></textarea></div>
+              </div>
+            </div>
+          </details>
+        </section>
+
+        <!-- SUITE: SHADOW DOM -->
+        <section id="suite-shadow">
+          <h3>🌗 Suite: Shadow DOM</h3>
+          <details open data-testid="tc-9">
+            <summary><strong>TC-9</strong> – Shadow DOM Echo</summary>
+            <div class="card">
+              <div class="kvs">
+                <div>Objective</div><div>Type inside web component and echo text.</div>
+                <div>Status</div>
+                <div><select data-testid="tc9-status"><option>Not Run</option><option>Pass</option><option>Fail</option><option>Blocked</option></select></div>
+              </div>
+              <div class="checklist">
+                <input type="checkbox" data-testid="tc9-s1"><label>Type "Hello Shadow" in inner input</label>
+                <input type="checkbox" data-testid="tc9-s2"><label>Click Echo</label>
+                <input type="checkbox" data-testid="tc9-s3"><label>Output equals input</label>
+              </div>
+              <div class="kvs">
+                <div>Expected</div><div>Echo span displays the typed text</div>
+                <div>Notes</div><div><textarea rows="2" data-testid="tc9-notes"></textarea></div>
+              </div>
+            </div>
+          </details>
+        </section>
+
+        <div class="footer">
+          <span class="muted">Tip: Translate each step to Playwright using <code>getByTestId()</code> and role locators.</span>
+          <div class="right">
+            <button class="btn" id="btnClear" data-testid="btn-clear">Clear all states</button>
+          </div>
+        </div>
+
+        <h4>Export Preview</h4>
+        <pre id="exportOut" data-testid="export-out">{}</pre>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // Simple nav highlighting when following hash links
+    const navLinks = document.querySelectorAll('nav a');
+    function syncNav(){
+      const h = location.hash || '#suite-wizard';
+      navLinks.forEach(a=>a.classList.toggle('active', a.getAttribute('href')===h));
+    }
+    window.addEventListener('hashchange', syncNav); syncNav();
+
+    // Mark all PASS
+    document.getElementById('btnMarkAll').addEventListener('click',()=>{
+      document.querySelectorAll('select').forEach(s=>{ if(s.dataset.testid?.includes('-status')) s.value='Pass'; });
+    });
+
+    // Export JSON of statuses, notes and checklist ticks
+    const out = document.getElementById('exportOut');
+    function collect(){
+      function tc(id){
+        return {
+          status: document.querySelector(`[data-testid="${id}-status"]`)?.value||'Not Run',
+          notes: (document.querySelector(`[data-testid="${id}-notes"]`)||{}).value||'',
+          steps: [...document.querySelectorAll(`[data-testid^="${id}-s"]`)].map((el,i)=>({idx:i+1, done:el.checked}))
+        };
+      }
+      const data = {
+        target: document.querySelector('[data-testid="target-url"]').textContent.trim(),
+        updatedAt: new Date().toISOString(),
+        cases: {
+          tc1: tc('tc1'), tc2: tc('tc2'), tc3: tc('tc3'), tc4: tc('tc4'),
+          tc5: tc('tc5'), tc6: tc('tc6'), tc7: tc('tc7'), tc8: tc('tc8'), tc9: tc('tc9')
+        }
+      };
+      out.textContent = JSON.stringify(data,null,2);
+      return data;
+    }
+    document.getElementById('btnExport').addEventListener('click', collect);
+
+    // Clear all states
+    document.getElementById('btnClear').addEventListener('click',()=>{
+      document.querySelectorAll('input[type="checkbox"]').forEach(c=>c.checked=false);
+      document.querySelectorAll('select').forEach(s=>s.value='Not Run');
+      document.querySelectorAll('textarea').forEach(t=>t.value='');
+      out.textContent = '{}';
+    });
+  </script>
+</body>
+</html>

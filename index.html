@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Playwright Practice – Test Plan Checklist </title>
+  <title>Playwright Practice – Test Plan Checklist -    AKS </title>
   <style>
     :root{--bg:#180a25;--panel:#221033;--text:#f3e8ff;--muted:#c4b5fd;--accent:#a855f7;--accent2:#c084fc;--border:#4c1d95;--ok:#22c55e;--warn:#f59e0b;--err:#ef4444}
-    html,body{margin:0;height:100%;background:linear-gradient(135deg,#2e1065,#581c87,#4c1d95);color:var(--text);font:14px/1.45 system-ui,Segoe UI,Inter,Roboto,Arial}
+    html,body{margin:0;min-height:100%;background:linear-gradient(135deg,#2e1065,#581c87,#4c1d95);color:var(--text);font:14px/1.45 system-ui,Segoe UI,Inter,Roboto,Arial}
     .container{max-width:1100px;margin:24px auto;padding:0 16px}
     header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border:1px solid var(--border);border-radius:14px;background:radial-gradient(1000px 120px at 10% -20%,rgba(168,85,247,.25),transparent),radial-gradient(1000px 120px at 90% -20%,rgba(192,132,252,.18),transparent);box-shadow:0 0 12px rgba(168,85,247,0.4)}
     .badge{background:#1a102a;border:1px solid #5b21b6;padding:6px 10px;border-radius:999px;color:#e9d5ff}
@@ -41,7 +41,7 @@
   <div class="container">
     <header>
       <h2 style="margin:0">Playwright Test Plan – Checklist (Purple)</h2>
-      <span class="badge">v2.0 • data-testids included</span>
+      <span class="badge">v2.2 • LocalStorage Enabled</span>
     </header>
 
     <div class="grid">
@@ -298,36 +298,66 @@
           </details>
         </section>
 
+        <h4>Export Preview</h4>
+        <pre id="exportOut" data-testid="export-out">{}</pre>
+
         <div class="footer">
-          <span class="muted">Tip: Translate each step to Playwright using <code>getByTestId()</code> and role locators.</span>
+          <span class="muted">Tip: Data auto-saves to LocalStorage and restores on refresh.</span>
           <div class="right">
             <button class="btn" id="btnClear" data-testid="btn-clear">Clear all states</button>
           </div>
         </div>
-
-        <h4>Export Preview</h4>
-        <pre id="exportOut" data-testid="export-out">{}</pre>
       </main>
     </div>
   </div>
 
   <script>
-    // Simple nav highlighting when following hash links
+    // ===== Navigation highlight =====
     const navLinks = document.querySelectorAll('nav a');
-    function syncNav(){
-      const h = location.hash || '#suite-wizard';
-      navLinks.forEach(a=>a.classList.toggle('active', a.getAttribute('href')===h));
-    }
+    function syncNav(){ const h = location.hash || '#suite-wizard'; navLinks.forEach(a=>a.classList.toggle('active', a.getAttribute('href')===h)); }
     window.addEventListener('hashchange', syncNav); syncNav();
 
-    // Mark all PASS
+    // ===== LocalStorage helpers =====
+    const STORAGE_KEY = 'playwright-checklist-v22';
+
+    function collectRaw() {
+      const data = {};
+      document.querySelectorAll('[data-testid]').forEach(el => {
+        const id = el.dataset.testid;
+        if (!id) return;
+        if (el.tagName === 'INPUT' && el.type === 'checkbox') data[id] = el.checked;
+        else if (el.tagName === 'SELECT') data[id] = el.value;
+        else if (el.tagName === 'TEXTAREA' || (el.tagName === 'INPUT' && el.type !== 'checkbox')) data[id] = el.value;
+      });
+      return data;
+    }
+
+    function restoreRaw(data){
+      Object.entries(data || {}).forEach(([id, val]) => {
+        const el = document.querySelector(`[data-testid="${id}"]`);
+        if (!el) return;
+        if (el.tagName === 'INPUT' && el.type === 'checkbox') el.checked = !!val;
+        else if (el.tagName === 'SELECT') el.value = val;
+        else if (el.tagName === 'TEXTAREA' || (el.tagName === 'INPUT' && el.type !== 'checkbox')) el.value = val;
+      });
+    }
+
+    function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(collectRaw())); }
+    function restore(){ const raw = localStorage.getItem(STORAGE_KEY); if (raw) restoreRaw(JSON.parse(raw)); }
+
+    document.addEventListener('input', save);
+    document.addEventListener('change', save);
+    window.addEventListener('DOMContentLoaded', restore);
+
+    // ===== Mark all PASS =====
     document.getElementById('btnMarkAll').addEventListener('click',()=>{
       document.querySelectorAll('select').forEach(s=>{ if(s.dataset.testid?.includes('-status')) s.value='Pass'; });
+      save();
     });
 
-    // Export JSON of statuses, notes and checklist ticks
+    // ===== Export structured JSON (same shape as earlier) =====
     const out = document.getElementById('exportOut');
-    function collect(){
+    function collectCases(){
       function tc(id){
         return {
           status: document.querySelector(`[data-testid="${id}-status"]`)?.value||'Not Run',
@@ -335,7 +365,7 @@
           steps: [...document.querySelectorAll(`[data-testid^="${id}-s"]`)].map((el,i)=>({idx:i+1, done:el.checked}))
         };
       }
-      const data = {
+      return {
         target: document.querySelector('[data-testid="target-url"]').textContent.trim(),
         updatedAt: new Date().toISOString(),
         cases: {
@@ -343,17 +373,23 @@
           tc5: tc('tc5'), tc6: tc('tc6'), tc7: tc('tc7'), tc8: tc('tc8'), tc9: tc('tc9')
         }
       };
-      out.textContent = JSON.stringify(data,null,2);
-      return data;
     }
-    document.getElementById('btnExport').addEventListener('click', collect);
+    document.getElementById('btnExport').addEventListener('click',()=>{
+      const data = collectCases();
+      out.textContent = JSON.stringify(data, null, 2);
+      // also persist a snapshot of the structured export
+      localStorage.setItem(STORAGE_KEY+'-export', JSON.stringify(data));
+    });
 
-    // Clear all states
+    // ===== Clear all =====
     document.getElementById('btnClear').addEventListener('click',()=>{
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(STORAGE_KEY+'-export');
       document.querySelectorAll('input[type="checkbox"]').forEach(c=>c.checked=false);
       document.querySelectorAll('select').forEach(s=>s.value='Not Run');
       document.querySelectorAll('textarea').forEach(t=>t.value='');
       out.textContent = '{}';
+      save();
     });
   </script>
 </body>
